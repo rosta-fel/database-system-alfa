@@ -1,9 +1,9 @@
 {
-  "DB_Server": {
+  "DatabaseConfig": {
     "Host": "localhost",
     "User": "root",
     "Password": "root",
-    "DB_Name": "database_system_alfa_db",
+    "Name": "database_system_alfa_db",
     "Port": 3306
   }
 }
