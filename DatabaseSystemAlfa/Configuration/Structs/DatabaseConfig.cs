@@ -63,7 +63,7 @@ public record struct DatabaseConfig
         init
         {
             if (value is <= 0 or > 65535)
-                throw new ArgumentOutOfRangeException(nameof(value), "Database port must be in the range 1 to 65535.");
+                throw new ArgumentOutOfRangeException(nameof(Port), "Database port must be in the range 1 to 65535.");
 
             _port = value;
         }
