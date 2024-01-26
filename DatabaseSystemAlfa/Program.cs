@@ -1,65 +1,101 @@
-﻿using System.Reflection;
-using DatabaseSystemAlfa.Configuration;
-using DatabaseSystemAlfa.Configuration.Structs;
-using Microsoft.Extensions.Configuration;
+﻿using DatabaseSystemAlfa.Library.Configuration;
+using DatabaseSystemAlfa.Library.Configuration.Structs;
+using DatabaseSystemAlfa.Library.Tools.Console.Message;
+using DatabaseSystemAlfa.Library.Tools.Console.Message.Extensions;
 using Spectre.Console;
 
-AppSettings? appSettings = null;
-string configFileName = "app-settings.json";
+namespace DatabaseSystemAlfa;
 
-try
+public abstract class Program
 {
-    IConfigurationRoot configurationRoot = AppConfigurator.Build(configFileName);
-    appSettings = new AppSettings(configurationRoot);
+    private const string ConfigFileName = "app-settings.json";
     
-    AnsiConsole.MarkupLine("[green]INFO:[/] Config file was loaded successfully!\n");
-}
-catch (Exception e)
-{
-    AnsiConsole.MarkupLine("[red]{0}[/]", e.Message);
-}
-
-if (appSettings == null)
-{
-    while (true)
+    public static void Main()
     {
-        AnsiConsole.MarkupLine("[yellow]WARN:[/] Config file need to be setup manually:");
-        
-        string host = AnsiConsole.Ask<string>("Enter server database [green]host[/]:");
-        string user = AnsiConsole.Ask<string>("Enter database [green]user[/]:");
-        string password = AnsiConsole.Prompt(
-            new TextPrompt<string>("[grey][[Optional]][/] Enter database user [green]password[/]:")
-                .AllowEmpty()
-                .PromptStyle("red")
-                .Secret());
-        string name = AnsiConsole.Ask<string>("Enter database [green]name[/]:");
-        int port = AnsiConsole.Ask<int>("Enter database [green]port[/]:");
-        
+        MessageBase.DisplayRequestedEvent += (_, message) => AnsiConsole.MarkupLine(message);
+
+        AppSettings? appSettings = null;
+
+        AnsiConsole.Write(
+            new FigletText("Alfa3")
+                .Centered()
+                .Color(Color.HotPink));
+
+        AnsiConsole.Write(
+            new Rule("[red]Welcome to Database System Alfa[/]")
+                .Centered()
+                .RuleStyle("orchid dim"));
+
+        AnsiConsole.WriteLine();
+
         try
         {
-            DatabaseConfig databaseConfig = new DatabaseConfig(host, user, password, name, port);
-            appSettings = new AppSettings(databaseConfig);
-            
-            AnsiConsole.MarkupLine("\n[green]Config file was created successfully![/]\n");
-            
-            break;
+            var configurationRoot = Configurator.Build(ConfigFileName);
+            appSettings = new AppSettings(configurationRoot);
+
+            StyledMessage.Info("Config file was loaded successfully.").Display();
         }
         catch (Exception e)
         {
-            AnsiConsole.MarkupLine("\n[red]{0}[/]\n", e.Message);
+            StyledMessage.Error(e.Message).Display();
         }
-    }
-    
-    try
-    {
-        if (AnsiConsole.Confirm("Want to [yellow]save the configuration?[/]"))
+
+        if (appSettings == null)
         {
-            AppSettings.SaveTo(configFileName, appSettings);
-            AnsiConsole.MarkupLine("\n[green]Config file was saved successfully![/]\n");
+            while (true)
+            {
+                StyledMessage.Warning("Config file need to be setup manually:")
+                    .PrependNewLine()
+                    .Display();
+
+                var host = AnsiConsole.Ask<string>("Enter server database [green]host[/]:");
+                var user = AnsiConsole.Ask<string>("Enter database [green]user[/]:");
+                var password = AnsiConsole.Prompt(
+                    new TextPrompt<string>("[grey][[Optional]][/] Enter database user [green]password[/]:")
+                        .AllowEmpty()
+                        .PromptStyle("red")
+                        .Secret());
+                var name = AnsiConsole.Ask<string>("Enter database [green]name[/]:");
+                var port = AnsiConsole.Ask<int>("Enter database [green]port[/]:");
+
+                try
+                {
+                    var databaseConfig = new DatabaseConfig(host, user, password, name, port);
+                    appSettings = new AppSettings(databaseConfig);
+
+                    StyledMessage.Success("Config file was created successfully!")
+                        .SurroundWithNewLines()
+                        .Display();
+
+                    break;
+                }
+                catch (Exception e)
+                {
+                    StyledMessage.Error(e.Message)
+                        .PrependNewLine()
+                        .Display();
+                }
+            }
+
+            try
+            {
+                if (AnsiConsole.Confirm("Want to [yellow]save the configuration?[/]"))
+                {
+                    AppSettings.SaveTo(ConfigFileName, appSettings);
+                    StyledMessage.Success("Config file was saved successfully!")
+                        .PrependNewLine()
+                        .Display();
+                    StyledMessage
+                        .Info(
+                            $"Configuration save path: \n{Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName)}")
+                        .AppendNewLine()
+                        .Display();
+                }
+            }
+            catch (Exception e)
+            {
+                StyledMessage.Error(e.Message);
+            }
         }
-    }
-    catch (Exception e)
-    {
-        AnsiConsole.MarkupLine("\n[red]{0}[/]\n", e.Message);
     }
 }
