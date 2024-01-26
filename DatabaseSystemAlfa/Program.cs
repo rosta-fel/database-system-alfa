@@ -12,10 +12,6 @@ public abstract class Program
     
     public static void Main()
     {
-        MessageBase.DisplayRequestedEvent += (_, message) => AnsiConsole.MarkupLine(message);
-
-        AppSettings? appSettings = null;
-
         AnsiConsole.Write(
             new FigletText("Alfa3")
                 .Centered()
@@ -27,18 +23,17 @@ public abstract class Program
                 .RuleStyle("orchid dim"));
 
         AnsiConsole.WriteLine();
+        
+        MessageBase.DisplayRequestedEvent += (_, message) => AnsiConsole.MarkupLine(message);
+
+        AppSettings? appSettings = null;
 
         try
         {
-            var configurationRoot = Configurator.Build(ConfigFileName);
-            appSettings = new AppSettings(configurationRoot);
-
+            appSettings = ConfiguratorHelper.LoadAppSettings(ConfigFileName);
             StyledMessage.Info("Config file was loaded successfully.").Display();
         }
-        catch (Exception e)
-        {
-            StyledMessage.Error(e.Message).Display();
-        }
+        catch (Exception e) { StyledMessage.Error(e.Message).Display(); }
 
         if (appSettings == null)
         {
