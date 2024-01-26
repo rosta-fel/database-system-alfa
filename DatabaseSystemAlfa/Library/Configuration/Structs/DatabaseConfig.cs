@@ -1,4 +1,4 @@
-namespace DatabaseSystemAlfa.Configuration.Structs;
+namespace DatabaseSystemAlfa.Library.Configuration.Structs;
 
 public record struct DatabaseConfig
 {

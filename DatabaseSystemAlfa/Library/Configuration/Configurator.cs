@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
 
-namespace DatabaseSystemAlfa.Configuration;
+namespace DatabaseSystemAlfa.Library.Configuration;
 
-public static class AppConfigurator
+public static class Configurator
 {
     public static IConfigurationRoot Build(string configurationFileName)
     {

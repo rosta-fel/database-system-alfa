@@ -1,9 +1,9 @@
 using System.Text.Json;
-using DatabaseSystemAlfa.Configuration.Exceptions;
-using DatabaseSystemAlfa.Configuration.Structs;
+using DatabaseSystemAlfa.Library.Configuration.Exceptions;
+using DatabaseSystemAlfa.Library.Configuration.Structs;
 using Microsoft.Extensions.Configuration;
 
-namespace DatabaseSystemAlfa.Configuration;
+namespace DatabaseSystemAlfa.Library.Configuration;
 
 public sealed class AppSettings
 {
