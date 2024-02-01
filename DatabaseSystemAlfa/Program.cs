@@ -1,6 +1,5 @@
 ﻿using DatabaseSystemAlfa.Library.Configuration;
 using DatabaseSystemAlfa.Library.Tools.Console.Message;
-using Microsoft.Extensions.Configuration;
 using Spectre.Console;
 
 namespace DatabaseSystemAlfa;
@@ -17,9 +16,7 @@ public abstract class Program
         
         try
         {
-            IConfiguration configuration = Configurator.InitBuilder().Build();
-            
-            _appSettings = new AppSettings(configuration);
+            _appSettings = new AppSettings(Configurator.InitBuilder().Build());
             StyledMessage.Info("Configuration file was loaded successfully").Display();
         }
         catch (Exception e)
