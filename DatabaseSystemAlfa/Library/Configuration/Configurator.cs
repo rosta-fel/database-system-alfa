@@ -1,20 +1,38 @@
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 
 namespace DatabaseSystemAlfa.Library.Configuration;
 
 public static class Configurator
 {
-    public static IConfigurationRoot Build(string configurationFileName)
+    private static string WorkingDirectory { get; } = Directory.GetCurrentDirectory();
+    public static string ConfigFileName { get; set; } = "config.json";
+    
+    public static IConfigurationBuilder InitBuilder()
     {
-        string currentDirectory = Directory.GetCurrentDirectory();
-        string filePath = Path.Combine(currentDirectory, configurationFileName);
-
+        if (string.IsNullOrWhiteSpace(ConfigFileName))
+            throw new ArgumentException("Configuration file name is invalid or not declared", nameof(ConfigFileName));
+        
+        string filePath = Path.Combine(WorkingDirectory, ConfigFileName);
+        
         if (!File.Exists(filePath))
-            throw new FileNotFoundException($"The file '{configurationFileName}' does not exist at the specified path: {currentDirectory}");
+            throw new FileNotFoundException($"The config file '{ConfigFileName}' does not exist at the specified path: {WorkingDirectory}");
 
-        return new ConfigurationBuilder()
-            .SetBasePath(currentDirectory)
-            .AddJsonFile(configurationFileName, true, false)
-            .Build();
+        return new ConfigurationBuilder().AddJsonFile(ConfigFileName, true, false);
+    }
+
+    public static void SerializeToJson(object instance, bool prettyPrint)
+    {
+        if (string.IsNullOrWhiteSpace(ConfigFileName))
+            throw new ArgumentException("Configuration file name is invalid or not declared", nameof(ConfigFileName));
+        
+        string filePath = Path.Combine(WorkingDirectory, ConfigFileName);
+
+        string json = JsonSerializer.Serialize(instance, new JsonSerializerOptions
+        {
+            WriteIndented = prettyPrint
+        });
+        
+        File.WriteAllText(filePath, json);
     }
 }
