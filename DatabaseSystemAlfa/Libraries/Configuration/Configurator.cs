@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 
-namespace DatabaseSystemAlfa.Library.Configuration;
+namespace DatabaseSystemAlfa.Libraries.Configuration;
 
 public static class Configurator
 {

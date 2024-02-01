@@ -1,4 +1,4 @@
-namespace DatabaseSystemAlfa.Library.Tools.Console.Message.Extensions;
+namespace DatabaseSystemAlfa.Libraries.Tools.Console.Message.Extensions;
 
 public static class StyledMessageExtensions
 {

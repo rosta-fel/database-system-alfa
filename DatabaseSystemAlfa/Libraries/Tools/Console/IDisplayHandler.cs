@@ -1,4 +1,4 @@
-namespace DatabaseSystemAlfa.Library.Tools.Console;
+namespace DatabaseSystemAlfa.Libraries.Tools.Console;
 
 public interface IDisplayHandler
 {

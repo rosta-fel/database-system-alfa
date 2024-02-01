@@ -1,4 +1,4 @@
-namespace DatabaseSystemAlfa.Library.Tools.Console.Message;
+namespace DatabaseSystemAlfa.Libraries.Tools.Console.Message;
 
 public class StyledMessage(string message) : MessageBase(message)
 {
