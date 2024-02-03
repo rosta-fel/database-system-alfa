@@ -21,12 +21,12 @@ public abstract class Program
         try
         {
             _appSettings = new AppSettings(Configurator.InitBuilder().Build());
-            StyledMessage.Info("Configuration file was loaded successfully").Display();
+            MessageTemplate.Info("Configuration file was loaded successfully").Display();
         }
         catch (Exception e)
         {
-            StyledMessage.Error(e.Message).Display();
-            StyledMessage.Warning("Config file need to be setup manually!").Display();
+            MessageTemplate.Error(e.Message).Display();
+            MessageTemplate.Warning("Config file need to be setup manually!").Display();
             
             _appSettings = new AppSettings();
             Configurator.SerializeToJson(_appSettings, true);
@@ -41,7 +41,7 @@ public abstract class Program
 
         string selectedMenuOperation = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title(StyledMessage.Title("Choose menu start option:").PrependNewLine().ToString())
+                .Title(MessageTemplate.Title("Choose menu start option:").PrependNewLine().ToString())
                 .AddChoices(menuOperations.Keys));
 
         if (menuOperations.TryGetValue(selectedMenuOperation, out IOperation? selectedOperation))
@@ -50,13 +50,13 @@ public abstract class Program
             OperationResult result = selectedOperation.Execute();
             
             if (result.IsSuccess)
-                StyledMessage.Success(result.Message).Display();
+                MessageTemplate.Success(result.Message).Display();
             else
-                StyledMessage.Error(result.Message).Display();
+                MessageTemplate.Error(result.Message).Display();
             
             if (!string.IsNullOrWhiteSpace(result.TipMessage))
-                StyledMessage.Tip(result.TipMessage).Display();
+                MessageTemplate.Tip(result.TipMessage).Display();
         }
-        else StyledMessage.Error("Invalid operation selected").Display();
+        else MessageTemplate.Error("Invalid operation selected").Display();
     }
 }
