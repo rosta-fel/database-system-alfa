@@ -7,13 +7,18 @@ public static class Configurator
 {
     private static string WorkingDirectory { get; } = Directory.GetCurrentDirectory();
     public static string ConfigFileName { get; set; } = "config.json";
-    
-    public static IConfigurationBuilder InitBuilder()
+
+    private static string GetValidatedConfigFilePath()
     {
         if (string.IsNullOrWhiteSpace(ConfigFileName))
             throw new ArgumentException("Configuration file name is invalid or not declared", nameof(ConfigFileName));
         
-        string filePath = Path.Combine(WorkingDirectory, ConfigFileName);
+        return Path.Combine(WorkingDirectory, ConfigFileName);
+    }
+    
+    public static IConfigurationBuilder InitBuilder()
+    {
+        string filePath = GetValidatedConfigFilePath();
         
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"The config file '{ConfigFileName}' does not exist at the specified path: {WorkingDirectory}");
@@ -23,10 +28,7 @@ public static class Configurator
 
     public static void SerializeToJson(object instance, bool prettyPrint)
     {
-        if (string.IsNullOrWhiteSpace(ConfigFileName))
-            throw new ArgumentException("Configuration file name is invalid or not declared", nameof(ConfigFileName));
-        
-        string filePath = Path.Combine(WorkingDirectory, ConfigFileName);
+        string filePath = GetValidatedConfigFilePath();
 
         string json = JsonSerializer.Serialize(instance, new JsonSerializerOptions
         {
