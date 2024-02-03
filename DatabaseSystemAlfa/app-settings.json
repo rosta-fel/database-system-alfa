@@ -1,9 +1,9 @@
 {
-  "DatabaseConfig": {
-    "Host": "localhost",
-    "User": "root",
+  "DbConnectionSettings": {
+    "Server": "127.0.0.1",
+    "Database": "database_system_alfa_db",
+    "Uid": "root",
     "Password": "root",
-    "Name": "database_system_alfa_db",
     "Port": 3306
   }
 }
