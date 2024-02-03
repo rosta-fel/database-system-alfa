@@ -12,5 +12,5 @@ public class MessageTemplate(string message) : MessageBase(message)
     
     public static MessageTemplate Tip(string message) => new($"[blue]TIP[/]: [gray]{message}[/]");
 
-    public static MessageTemplate Title(string message) => new($"[bold]{message}[/]");
+    public static MessageTemplate Bold(string message) => new($"[bold]{message}[/]");
 }
