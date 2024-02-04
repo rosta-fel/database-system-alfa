@@ -43,24 +43,27 @@ public abstract class Program
             { "Exit", new ExitOperation() }
         };
 
-        string selectedMenuOperation = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title(MessageTemplate.Title("Choose menu start option:").PrependNewLine().ToString())
-                .AddChoices(menuOperations.Keys));
-
-        if (menuOperations.TryGetValue(selectedMenuOperation, out IOperation? selectedOperation))
+        do
         {
-            AnsiConsole.Clear();
-            OperationResult result = selectedOperation.Execute();
+            string selectedMenuOperation = AnsiConsole.Prompt(PromptTemplate.Classic(
+                MessageTemplate.Regular("Choose menu start option:").PrependNewLine().ToString(),
+                menuOperations.Keys)
+            );
+
+            if (menuOperations.TryGetValue(selectedMenuOperation, out IOperation? selectedOperation))
+            {
+                AnsiConsole.Clear();
+                OperationResult result = selectedOperation.Execute();
             
-            if (result.IsSuccess)
-                MessageTemplate.Success(result.Message).Display();
-            else
-                MessageTemplate.Error(result.Message).Display();
+                if (result.IsSuccess)
+                    MessageTemplate.Success(result.Message).Display();
+                else
+                    MessageTemplate.Error(result.Message).Display();
             
-            if (!string.IsNullOrWhiteSpace(result.TipMessage))
-                MessageTemplate.Tip(result.TipMessage).Display();
-        }
-        else MessageTemplate.Error("Invalid operation selected").Display();
+                if (!string.IsNullOrWhiteSpace(result.TipMessage))
+                    MessageTemplate.Tip(result.TipMessage).Display();
+            }
+            else MessageTemplate.Error("Invalid operation selected").Display();
+        }while(!DatabaseSingleton.Instance.ConnectionIsOpen());
     }
 }
