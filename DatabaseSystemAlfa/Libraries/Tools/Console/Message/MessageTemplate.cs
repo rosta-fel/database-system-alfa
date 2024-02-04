@@ -2,6 +2,8 @@ namespace DatabaseSystemAlfa.Libraries.Tools.Console.Message;
 
 public class MessageTemplate(string message) : MessageBase(message)
 {
+    public static MessageTemplate Regular(string message) => new(message);
+    
     public static MessageTemplate Info(string message) => new($"[cyan]INFO[/]: [gray]{message}[/]");
     
     public static MessageTemplate Success(string message) => new($"[green]{message}[/]");
