@@ -1,6 +1,6 @@
 namespace DatabaseSystemAlfa.Services.Operations.Menu.Database;
 
-public class InsertIntoTableOperation : IOperation
+public class RemoveFromTableOperation : IOperation
 {
     public OperationResult Execute()
     {
