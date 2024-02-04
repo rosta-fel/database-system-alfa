@@ -72,7 +72,7 @@ public abstract class Program
     private static void HandleOperations(string description, Dictionary<string, IOperation> operations,
         Predicate<DatabaseSingleton> condition)
     {
-        do
+        while(condition(DatabaseSingleton.Instance))
         {
             var selectedOperation = PromptTemplate<string>.Selection(
                 MessageTemplate.Regular($"{description}:").PrependNewLine().ToString(),
@@ -86,6 +86,6 @@ public abstract class Program
             result.AdditionalMsg?.Display();
 
             if (operation is ExitOperation) break;
-        } while (condition(DatabaseSingleton.Instance));
+        }
     }
 }
