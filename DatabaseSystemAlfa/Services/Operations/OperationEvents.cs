@@ -5,6 +5,16 @@ public struct OperationEvents
     public event Func<string, string, string>? OnInputStringRequestedEvent;
     public event Func<string, string, string>? OnOptionalAndSecretInputStringRequestedEvent;
     public event Func<string, string, int>? OnInputIntRequestedEvent;
+    
+    public OperationEvents(
+        Func<string, string, string>? onInputStringRequestedEvent = null,
+        Func<string, string, string>? onOptionalAndSecretInputStringRequestedEvent = null,
+        Func<string, string, int>? onInputIntRequestedEvent = null)
+    {
+        OnInputStringRequestedEvent += onInputStringRequestedEvent;
+        OnOptionalAndSecretInputStringRequestedEvent += onOptionalAndSecretInputStringRequestedEvent;
+        OnInputIntRequestedEvent += onInputIntRequestedEvent;
+    }
 
     public string RequestOnInputString(string prompt, string arg)
     {
