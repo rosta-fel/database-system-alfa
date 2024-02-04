@@ -4,19 +4,42 @@ using Spectre.Console;
 
 namespace DatabaseSystemAlfa.Services.Operations.Menu.Start;
 
-public class ConnectToDatabaseOperation(AppSettings appSettings, Status connStatus, int maxConnRetries)
-    : IOperation
+/// <summary>
+///     Represents an operation to connect to the database using the provided application settings.
+/// </summary>
+public class ConnectToDatabaseOperation : IOperation
 {
+    private readonly AppSettings _appSettings;
+    private readonly Status _connStatus;
+    private readonly int _maxConnRetries;
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ConnectToDatabaseOperation" /> class.
+    /// </summary>
+    /// <param name="appSettings">The application settings containing database connection information.</param>
+    /// <param name="connStatus">The status indicator to display connection progress.</param>
+    /// <param name="maxConnRetries">The maximum number of retries for connecting to the database.</param>
+    public ConnectToDatabaseOperation(AppSettings appSettings, Status connStatus, int maxConnRetries)
+    {
+        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+        _connStatus = connStatus ?? throw new ArgumentNullException(nameof(connStatus));
+        _maxConnRetries = maxConnRetries;
+    }
+
+    /// <summary>
+    ///     Executes the operation to connect to the database.
+    /// </summary>
+    /// <returns>The result of the operation encapsulated in an <see cref="OperationResult" /> object.</returns>
     public OperationResult Execute()
     {
-        DatabaseSingleton.Instance.Initialize(appSettings.GetConnectionString());
+        DatabaseSingleton.Instance.Initialize(_appSettings.GetConnectionString());
 
         MySqlException lastMySqlException = null!;
         OperationResult? result = null;
 
-        connStatus.Start("Connecting to database...", ctx =>
+        _connStatus.Start("Connecting to database...", ctx =>
         {
-            for (int retry = 1; retry <= maxConnRetries; retry++)
+            for (var retry = 1; retry <= _maxConnRetries; retry++)
                 try
                 {
                     DatabaseSingleton.Instance.Connection?.Open();
@@ -29,7 +52,7 @@ public class ConnectToDatabaseOperation(AppSettings appSettings, Status connStat
                     lastMySqlException = mySqlException;
 
                     if (retry == 1) ctx.Spinner(Spinner.Known.GrowVertical);
-                    ctx.Status($"(Error) {retry}/{maxConnRetries} Attempting to connect...");
+                    ctx.Status($"(Error) {retry}/{_maxConnRetries} Attempting to connect...");
 
                     Thread.Sleep(1000 * retry);
                 }

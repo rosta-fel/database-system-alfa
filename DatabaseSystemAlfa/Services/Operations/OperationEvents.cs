@@ -1,6 +1,6 @@
 namespace DatabaseSystemAlfa.Services.Operations;
 
-public struct OperationEvents
+public class OperationEvents
 {
     public event Func<string, string, string>? OnInputStringRequestedEvent;
     public event Func<string, string, string>? OnOptionalAndSecretInputStringRequestedEvent;
