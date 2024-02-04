@@ -27,5 +27,7 @@ namespace DatabaseSystemAlfa.Services
                 Connection = null;
             }
         }
+
+        public bool ConnectionIsOpen() => Connection is { State: ConnectionState.Open };
     }
 }
