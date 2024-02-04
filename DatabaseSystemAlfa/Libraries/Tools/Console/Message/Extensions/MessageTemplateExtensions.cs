@@ -16,4 +16,9 @@ public static class MessageTemplateExtensions
     {
         return new MessageTemplate(Environment.NewLine + messageTemplate + Environment.NewLine);
     }
+
+    public static MessageTemplate MarkAsOptional(this MessageTemplate messageTemplate)
+    {
+        return new MessageTemplate($"[gray][[Optional]][/] {messageTemplate}");
+    }
 }
