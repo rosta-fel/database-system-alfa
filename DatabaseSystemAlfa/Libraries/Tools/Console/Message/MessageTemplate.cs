@@ -15,4 +15,9 @@ public class MessageTemplate(string message) : MessageBase(message)
     public static MessageTemplate Tip(string message) => new($"[blue]TIP[/]: [gray]{message}[/]");
 
     public static MessageTemplate Bold(string message) => new($"[bold]{message}[/]");
+    
+    public static MessageTemplate Italic(string message) => new($"[italic]{message}[/]");
+
+    public static MessageTemplate HighlightArg(string promptMsg, string promptArg) 
+        => new(string.Format(promptMsg, $"[green][underline]{promptArg}[/][/]"));
 }
