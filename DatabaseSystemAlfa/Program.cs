@@ -1,6 +1,8 @@
 ﻿using DatabaseSystemAlfa.Libraries.Configuration;
 using DatabaseSystemAlfa.Libraries.Tools.Console.Message;
 using DatabaseSystemAlfa.Libraries.Tools.Console.Message.Extensions;
+using DatabaseSystemAlfa.Libraries.Tools.Console.Prompt;
+using DatabaseSystemAlfa.Services;
 using DatabaseSystemAlfa.Services.Operations;
 using DatabaseSystemAlfa.Services.Operations.Global;
 using DatabaseSystemAlfa.Services.Operations.Menu;
@@ -26,10 +28,12 @@ public abstract class Program
         catch (Exception e)
         {
             MessageTemplate.Error(e.Message).Display();
-            MessageTemplate.Warning("Config file need to be setup manually!").Display();
             
             _appSettings = new AppSettings();
             Configurator.SerializeToJson(_appSettings, true);
+            MessageTemplate.Info("The configuration template was auto-generated in the executable file's root folder").Display();
+            
+            MessageTemplate.Warning("Config file need to be setup manually!").Display();
         }
         
         Dictionary<string, IOperation> menuOperations = new Dictionary<string, IOperation>
