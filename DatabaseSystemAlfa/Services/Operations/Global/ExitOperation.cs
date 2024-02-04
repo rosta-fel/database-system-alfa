@@ -1,3 +1,5 @@
+using DatabaseSystemAlfa.Libraries.Tools.Console.Message;
+
 namespace DatabaseSystemAlfa.Services.Operations.Global;
 
 public class ExitOperation : IOperation
@@ -7,11 +9,11 @@ public class ExitOperation : IOperation
         try
         {
             DatabaseSingleton.Instance.CloseConnection();
-            return new OperationResult(true, "Successful exit");
+            return new OperationResult(MessageTemplate.Success("Successfully concluded pre-exit operations. Application is shutting down..."));
         }
         catch (Exception e)
         {
-            return new OperationResult(false, e.Message);
+            return new OperationResult(MessageTemplate.Error($"{e.Message} (Force application shutdown)"));
         }
     }
 }
