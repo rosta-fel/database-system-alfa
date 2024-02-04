@@ -35,6 +35,7 @@ public class ConnectToDatabaseOperation(AppSettings appSettings, Status connStat
             }
         });
     
+        // TODO: Fix bug with always closed connection
         DatabaseSingleton.Instance.CloseConnection();
         
         return result ??= new OperationResult(
