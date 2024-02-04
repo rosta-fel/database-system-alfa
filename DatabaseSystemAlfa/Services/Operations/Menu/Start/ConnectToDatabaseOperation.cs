@@ -2,7 +2,7 @@ using DatabaseSystemAlfa.Libraries.Tools.Console.Message;
 using MySql.Data.MySqlClient;
 using Spectre.Console;
 
-namespace DatabaseSystemAlfa.Services.Operations.Menu;
+namespace DatabaseSystemAlfa.Services.Operations.Menu.Start;
 
 public class ConnectToDatabaseOperation(AppSettings appSettings, Status connStatus, int maxConnRetries)
     : IOperation

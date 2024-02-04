@@ -1,7 +1,7 @@
 using DatabaseSystemAlfa.Libraries.Configuration;
 using DatabaseSystemAlfa.Libraries.Tools.Console.Message;
 
-namespace DatabaseSystemAlfa.Services.Operations.Menu;
+namespace DatabaseSystemAlfa.Services.Operations.Menu.Start;
 
 public class SaveConfigurationOperation(AppSettings appSettings) : IOperation
 {

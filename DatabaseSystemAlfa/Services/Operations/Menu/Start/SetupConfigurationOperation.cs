@@ -2,7 +2,7 @@ using DatabaseSystemAlfa.Libraries.Configuration.Settings;
 using DatabaseSystemAlfa.Libraries.Tools.Console.Message;
 using DatabaseSystemAlfa.Libraries.Tools.Console.Message.Extensions;
 
-namespace DatabaseSystemAlfa.Services.Operations.Menu;
+namespace DatabaseSystemAlfa.Services.Operations.Menu.Start;
 
 public class SetupConfigurationOperation(AppSettings appSettings, OperationEvents oEvents) : IOperation
 {
