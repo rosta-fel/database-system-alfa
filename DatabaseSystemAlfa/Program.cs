@@ -36,22 +36,24 @@ public abstract class Program
             MessageTemplate.Italic("The configuration template was auto-generated in the executable file's root folder")
                 .PrependNewLine().Display();
         }
-        
+
         var menuOperations = new Dictionary<string, IOperation>
         {
             { "Connect to database", new ConnectToDatabaseOperation(_appSettings, AnsiConsole.Status(), 3) },
-            { "Setup configuration", new SetupConfigurationOperation(_appSettings, new OperationEvents(
-                PromptTemplate<string>.HighlightAsk,
-                PromptTemplate<string>.OptionalAndSecret,
-                PromptTemplate<int>.HighlightAsk
-            ))},
-            { "Save configuration", new SaveConfigurationOperation(_appSettings)},
+            {
+                "Setup configuration", new SetupConfigurationOperation(_appSettings, new OperationEvents(
+                    PromptTemplate<string>.HighlightAsk,
+                    PromptTemplate<string>.OptionalAndSecret,
+                    PromptTemplate<int>.HighlightAsk
+                ))
+            },
+            { "Save configuration", new SaveConfigurationOperation(_appSettings) },
             { "Exit", new ExitOperation() }
-        };  
+        };
 
         HandleOperations("Select menu operation", menuOperations, instance => !instance.ConnectionIsOpen());
     }
-    
+
     private static void SetupEventHandlers()
     {
         MessageBase.OnDisplayRequestedEvent += (_, msg) => AnsiConsole.MarkupLine(msg);
@@ -60,21 +62,22 @@ public abstract class Program
         PromptBase<string>.OnPromptRequestedEvent += AnsiConsole.Prompt;
     }
 
-    private static void HandleOperations(string description, Dictionary<string, IOperation> operations, Predicate<DatabaseSingleton> condition) 
+    private static void HandleOperations(string description, Dictionary<string, IOperation> operations,
+        Predicate<DatabaseSingleton> condition)
     {
         do
         {
-            string selectedOperation = PromptTemplate<string>.Selection(
+            var selectedOperation = PromptTemplate<string>.Selection(
                 MessageTemplate.Regular($"{description}:").PrependNewLine().ToString(),
                 operations.Keys);
 
-            if (!operations.TryGetValue(selectedOperation, out IOperation? operation)) continue;
+            if (!operations.TryGetValue(selectedOperation, out var operation)) continue;
             AnsiConsole.Clear();
-                
-            OperationResult result = operation.Execute();
+
+            var result = operation.Execute();
             result.Message.Display();
             result.AdditionalMsg?.Display();
-                
+
             if (operation is ExitOperation) break;
         } while (condition(DatabaseSingleton.Instance));
     }
