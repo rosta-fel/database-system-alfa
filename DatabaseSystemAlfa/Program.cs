@@ -51,7 +51,14 @@ public abstract class Program
             { "Exit", new ExitOperation() }
         };
 
-        HandleOperations("Select menu operation", menuStartOperations, instance => !instance.ConnectionIsOpen());
+        HandleOperations("Select menu start operation", menuStartOperations, instance => !instance.ConnectionIsOpen());
+        
+        var menuDatabaseOperations = new Dictionary<string, IOperation>
+        {
+            { "Exit", new ExitOperation() }
+        };
+        
+        HandleOperations("Select menu database operation", menuDatabaseOperations, instance => instance.ConnectionIsOpen());
     }
 
     private static void SetupEventHandlers()
