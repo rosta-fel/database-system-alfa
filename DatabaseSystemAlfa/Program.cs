@@ -5,6 +5,7 @@ using DatabaseSystemAlfa.Libraries.Tools.Console.Prompt;
 using DatabaseSystemAlfa.Services;
 using DatabaseSystemAlfa.Services.Operations;
 using DatabaseSystemAlfa.Services.Operations.Global;
+using DatabaseSystemAlfa.Services.Operations.Menu.Database;
 using DatabaseSystemAlfa.Services.Operations.Menu.Start;
 using Spectre.Console;
 
@@ -55,6 +56,10 @@ public abstract class Program
         
         var menuDatabaseOperations = new Dictionary<string, IOperation>
         {
+            { "Get from table by parameter", new GetFromTableByParamOperation() },
+            { "Insert into table", new InsertIntoTableOperation() },
+            { "Update in table", new UpdateInTableOperation() },
+            { "Delete from table", new DeleteFromTableOperation() },
             { "Exit", new ExitOperation() }
         };
         
