@@ -6,7 +6,7 @@ namespace DatabaseSystemAlfa;
 
 public class AppSettings
 {
-    public DbConnectionSettings DbConnectionSettings { get; }
+    public DbConnectionSettings DbConnectionSettings { get; set; }
 
     public AppSettings()
     {
