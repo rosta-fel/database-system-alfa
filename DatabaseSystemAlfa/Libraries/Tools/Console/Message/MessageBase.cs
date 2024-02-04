@@ -2,16 +2,16 @@ namespace DatabaseSystemAlfa.Libraries.Tools.Console.Message;
 
 public abstract class MessageBase(string message) : IDisplayHandler
 {
-    public static event EventHandler<string>? DisplayRequestedEvent;
+    public static event EventHandler<string>? OnDisplayRequestedEvent;
 
     public void Display()
     {
-        OnDisplayRequested(message);
+        RequestOnDisplay(message);
     }
 
-    private void OnDisplayRequested(string messageInput)
+    private void RequestOnDisplay(string messageInput)
     {
-        DisplayRequestedEvent?.Invoke(this, messageInput);
+        OnDisplayRequestedEvent?.Invoke(this, messageInput);
     }
     
     public override string ToString() => message;
