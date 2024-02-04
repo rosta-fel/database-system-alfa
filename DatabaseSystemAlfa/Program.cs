@@ -14,12 +14,16 @@ public abstract class Program
 {
     private static AppSettings? _appSettings;
     private const string ConfigFileName = "app-settings.json";
-    
+
     public static void Main()
     {
-        MessageBase.DisplayRequestedEvent += (_, msg) => AnsiConsole.MarkupLine(msg);
-        Configurator.ConfigFileName = ConfigFileName;
+        MessageBase.OnDisplayRequestedEvent += (_, msg) => AnsiConsole.MarkupLine(msg);
+        PromptBase<string>.OnAskRequestedEvent += AnsiConsole.Ask<string>;
+        PromptBase<int>.OnAskRequestedEvent += AnsiConsole.Ask<int>;
+        PromptBase<string>.OnPromptRequestedEvent += AnsiConsole.Prompt;
         
+        Configurator.ConfigFileName = ConfigFileName;
+
         try
         {
             _appSettings = new AppSettings(Configurator.InitBuilder().Build());
@@ -28,42 +32,48 @@ public abstract class Program
         catch (Exception e)
         {
             MessageTemplate.Error(e.Message).Display();
-            
+
             _appSettings = new AppSettings();
             Configurator.SerializeToJson(_appSettings, true);
-            MessageTemplate.Info("The configuration template was auto-generated in the executable file's root folder").Display();
-            
-            MessageTemplate.Warning("Config file need to be setup manually!").Display();
+            MessageTemplate.Warning("Config file need to be setup manually").Display();
+
+            MessageTemplate.Italic("The configuration template was auto-generated in the executable file's root folder")
+                .PrependNewLine().Display();
         }
-        
-        Dictionary<string, IOperation> menuOperations = new Dictionary<string, IOperation>
+
+        OperationEvents setupConfEvents = new OperationEvents();
+        setupConfEvents.OnInputStringRequestedEvent += PromptTemplate<string>.HighlightAsk;
+        setupConfEvents.OnOptionalAndSecretInputStringRequestedEvent += PromptTemplate<string>.OptionalAndSecret;
+        setupConfEvents.OnInputIntRequestedEvent += PromptTemplate<int>.HighlightAsk;
+
+        var menuOperations = new Dictionary<string, IOperation>
         {
             { "Connect to database", new ConnectToDatabaseOperation(_appSettings, AnsiConsole.Status(), 3) },
-            { "Setup configuration", new SetupConfigurationOperation() },
+            { "Setup configuration", new SetupConfigurationOperation(_appSettings, setupConfEvents) },
+            { "Save configuration", new SaveConfigurationOperation(_appSettings)},
             { "Exit", new ExitOperation() }
-        };
+        };  
 
         do
         {
-            string selectedMenuOperation = AnsiConsole.Prompt(PromptTemplate.Classic(
-                MessageTemplate.Regular("Choose menu start option:").PrependNewLine().ToString(),
-                menuOperations.Keys)
-            );
+            var selectedMenuOperation = PromptTemplate<string>.Selection(
+                MessageTemplate.Regular("Select menu operation:").PrependNewLine().ToString(),
+                menuOperations.Keys);
 
-            if (menuOperations.TryGetValue(selectedMenuOperation, out IOperation? selectedOperation))
+            if (menuOperations.TryGetValue(selectedMenuOperation, out var selectedOperation))
             {
                 AnsiConsole.Clear();
+                
                 OperationResult result = selectedOperation.Execute();
-            
-                if (result.IsSuccess)
-                    MessageTemplate.Success(result.Message).Display();
-                else
-                    MessageTemplate.Error(result.Message).Display();
-            
-                if (!string.IsNullOrWhiteSpace(result.TipMessage))
-                    MessageTemplate.Tip(result.TipMessage).Display();
+                result.Message.Display();
+                result.AdditionalMsg?.Display();
+
+                if (selectedMenuOperation.Equals("Exit")) return;
             }
-            else MessageTemplate.Error("Invalid operation selected").Display();
-        }while(!DatabaseSingleton.Instance.ConnectionIsOpen());
+            else
+            {
+                MessageTemplate.Error("Invalid operation selected").Display();
+            }
+        } while (!DatabaseSingleton.Instance.ConnectionIsOpen());
     }
 }
