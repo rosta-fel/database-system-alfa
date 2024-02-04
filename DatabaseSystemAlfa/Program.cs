@@ -5,7 +5,7 @@ using DatabaseSystemAlfa.Libraries.Tools.Console.Prompt;
 using DatabaseSystemAlfa.Services;
 using DatabaseSystemAlfa.Services.Operations;
 using DatabaseSystemAlfa.Services.Operations.Global;
-using DatabaseSystemAlfa.Services.Operations.Menu;
+using DatabaseSystemAlfa.Services.Operations.Menu.Start;
 using Spectre.Console;
 
 namespace DatabaseSystemAlfa;
@@ -37,7 +37,7 @@ public abstract class Program
                 .PrependNewLine().Display();
         }
 
-        var menuOperations = new Dictionary<string, IOperation>
+        var menuStartOperations = new Dictionary<string, IOperation>
         {
             { "Connect to database", new ConnectToDatabaseOperation(_appSettings, AnsiConsole.Status(), 3) },
             {
@@ -51,7 +51,7 @@ public abstract class Program
             { "Exit", new ExitOperation() }
         };
 
-        HandleOperations("Select menu operation", menuOperations, instance => !instance.ConnectionIsOpen());
+        HandleOperations("Select menu operation", menuStartOperations, instance => !instance.ConnectionIsOpen());
     }
 
     private static void SetupEventHandlers()
