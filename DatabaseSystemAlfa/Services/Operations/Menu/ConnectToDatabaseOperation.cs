@@ -34,11 +34,12 @@ public class ConnectToDatabaseOperation(AppSettings appSettings, Status connStat
                 }
             }
         });
-    
-        // TODO: Fix bug with always closed connection
-        DatabaseSingleton.Instance.CloseConnection();
+
+        if (result is not null) return result;
         
-        return result ??= new OperationResult(
+        DatabaseSingleton.Instance.CloseConnection();
+
+        return new OperationResult(
             false,
             lastMySqlException.Message,
             "Ensure the database server is running, and verify that the connection configuration is correct"
