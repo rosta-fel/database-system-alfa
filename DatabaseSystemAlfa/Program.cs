@@ -17,11 +17,7 @@ public abstract class Program
 
     public static void Main()
     {
-        MessageBase.OnDisplayRequestedEvent += (_, msg) => AnsiConsole.MarkupLine(msg);
-        PromptBase<string>.OnAskRequestedEvent += AnsiConsole.Ask<string>;
-        PromptBase<int>.OnAskRequestedEvent += AnsiConsole.Ask<int>;
-        PromptBase<string>.OnPromptRequestedEvent += AnsiConsole.Prompt;
-        
+        SetupEventHandlers();
         Configurator.ConfigFileName = ConfigFileName;
 
         try
@@ -40,40 +36,46 @@ public abstract class Program
             MessageTemplate.Italic("The configuration template was auto-generated in the executable file's root folder")
                 .PrependNewLine().Display();
         }
-
-        OperationEvents setupConfEvents = new OperationEvents();
-        setupConfEvents.OnInputStringRequestedEvent += PromptTemplate<string>.HighlightAsk;
-        setupConfEvents.OnOptionalAndSecretInputStringRequestedEvent += PromptTemplate<string>.OptionalAndSecret;
-        setupConfEvents.OnInputIntRequestedEvent += PromptTemplate<int>.HighlightAsk;
-
+        
         var menuOperations = new Dictionary<string, IOperation>
         {
             { "Connect to database", new ConnectToDatabaseOperation(_appSettings, AnsiConsole.Status(), 3) },
-            { "Setup configuration", new SetupConfigurationOperation(_appSettings, setupConfEvents) },
+            { "Setup configuration", new SetupConfigurationOperation(_appSettings, new OperationEvents(
+                PromptTemplate<string>.HighlightAsk,
+                PromptTemplate<string>.OptionalAndSecret,
+                PromptTemplate<int>.HighlightAsk
+            ))},
             { "Save configuration", new SaveConfigurationOperation(_appSettings)},
             { "Exit", new ExitOperation() }
         };  
 
+        HandleOperations("Select menu operation", menuOperations, instance => !instance.ConnectionIsOpen());
+    }
+    
+    private static void SetupEventHandlers()
+    {
+        MessageBase.OnDisplayRequestedEvent += (_, msg) => AnsiConsole.MarkupLine(msg);
+        PromptBase<string>.OnAskRequestedEvent += AnsiConsole.Ask<string>;
+        PromptBase<int>.OnAskRequestedEvent += AnsiConsole.Ask<int>;
+        PromptBase<string>.OnPromptRequestedEvent += AnsiConsole.Prompt;
+    }
+
+    private static void HandleOperations(string description, Dictionary<string, IOperation> operations, Predicate<DatabaseSingleton> condition) 
+    {
         do
         {
-            var selectedMenuOperation = PromptTemplate<string>.Selection(
-                MessageTemplate.Regular("Select menu operation:").PrependNewLine().ToString(),
-                menuOperations.Keys);
+            string selectedOperation = PromptTemplate<string>.Selection(
+                MessageTemplate.Regular($"{description}:").PrependNewLine().ToString(),
+                operations.Keys);
 
-            if (menuOperations.TryGetValue(selectedMenuOperation, out var selectedOperation))
-            {
-                AnsiConsole.Clear();
+            if (!operations.TryGetValue(selectedOperation, out IOperation? operation)) continue;
+            AnsiConsole.Clear();
                 
-                OperationResult result = selectedOperation.Execute();
-                result.Message.Display();
-                result.AdditionalMsg?.Display();
-
-                if (selectedMenuOperation.Equals("Exit")) return;
-            }
-            else
-            {
-                MessageTemplate.Error("Invalid operation selected").Display();
-            }
-        } while (!DatabaseSingleton.Instance.ConnectionIsOpen());
+            OperationResult result = operation.Execute();
+            result.Message.Display();
+            result.AdditionalMsg?.Display();
+                
+            if (operation is ExitOperation) break;
+        } while (condition(DatabaseSingleton.Instance));
     }
 }
